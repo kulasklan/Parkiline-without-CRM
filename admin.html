@@ -31,6 +31,32 @@
                         </div>
                     </div>
 
+                    <div class="setup-instructions" id="setupInstructions">
+                        <h3><i class="fas fa-lightbulb"></i> Setup Instructions</h3>
+                        <ol class="instructions-list">
+                            <li>
+                                <strong>Go to Bitrix24:</strong> Open your Bitrix24 account and navigate to:
+                                <code>Menu → Developer Resources → Other → Inbound Webhook</code>
+                            </li>
+                            <li>
+                                <strong>Assign Permissions:</strong> Click the "select" button in the "Assign permissions" section
+                            </li>
+                            <li>
+                                <strong>Select CRM Scope:</strong> From the list, check the box next to <strong>"CRM"</strong> (this grants access to all CRM methods including leads, deals, and activities)
+                            </li>
+                            <li>
+                                <strong>Save:</strong> Click "Save" and then click the green "SAVE" button at the bottom
+                            </li>
+                            <li>
+                                <strong>Copy URL:</strong> Copy your webhook URL and paste it below
+                            </li>
+                        </ol>
+                        <div class="instructions-note">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Note:</strong> By selecting the "CRM" scope, you automatically get access to all CRM operations (crm.lead.add, crm.lead.update, crm.deal.add, crm.activity.add, etc.)
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label for="bitrixWebhook">Bitrix24 Webhook URL</label>
                         <input
@@ -38,7 +64,7 @@
                             id="bitrixWebhook"
                             class="form-input"
                             placeholder="https://yourcompany.bitrix24.com/rest/1/abc123xyz456/">
-                        <small class="form-hint">Get your webhook URL from Bitrix24 Developer Settings</small>
+                        <small class="form-hint">Paste your Bitrix24 webhook URL here</small>
                     </div>
 
                     <div class="button-group">

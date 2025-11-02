@@ -9,6 +9,14 @@ class AdminPanel {
         this.loadStatistics();
         this.loadRecentActivity();
         this.checkConnectionStatus();
+        this.initializeBitrixIntegration();
+    }
+
+    initializeBitrixIntegration() {
+        const webhookUrl = window.CONFIG?.BITRIX_WEBHOOK_URL || localStorage.getItem('bitrix_webhook_url');
+        if (webhookUrl && window.bitrixIntegration) {
+            window.bitrixIntegration.configure(webhookUrl);
+        }
     }
 
     attachEventListeners() {
@@ -18,11 +26,14 @@ class AdminPanel {
     }
 
     loadBitrixConfig() {
+        const configWebhook = window.CONFIG?.BITRIX_WEBHOOK_URL;
         const savedWebhook = localStorage.getItem('bitrix_webhook_url');
-        if (savedWebhook) {
-            document.getElementById('bitrixWebhook').value = savedWebhook;
+        const webhookUrl = configWebhook || savedWebhook;
+
+        if (webhookUrl) {
+            document.getElementById('bitrixWebhook').value = webhookUrl;
             if (window.bitrixIntegration) {
-                window.bitrixIntegration.configure(savedWebhook);
+                window.bitrixIntegration.configure(webhookUrl);
             }
         }
     }
