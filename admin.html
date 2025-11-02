@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - ParkLine Residences</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <div class="header-content">
+                <h1>ParkLine Admin Panel</h1>
+                <a href="index.html" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Back to Website
+                </a>
+            </div>
+        </header>
+
+        <main class="admin-main">
+            <section class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-plug"></i> Bitrix24 Integration</h2>
+                </div>
+                <div class="card-body">
+                    <div class="connection-status" id="connectionStatus">
+                        <div class="status-indicator" id="statusIndicator">
+                            <i class="fas fa-circle"></i>
+                            <span id="statusText">Not configured</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bitrixWebhook">Bitrix24 Webhook URL</label>
+                        <input
+                            type="text"
+                            id="bitrixWebhook"
+                            class="form-input"
+                            placeholder="https://yourcompany.bitrix24.com/rest/1/abc123xyz456/">
+                        <small class="form-hint">Get your webhook URL from Bitrix24 Developer Settings</small>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="btnTestConnection" class="btn btn-secondary">
+                            <i class="fas fa-plug"></i> Test Connection
+                        </button>
+                        <button id="btnSaveConfig" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Configuration
+                        </button>
+                    </div>
+
+                    <div id="messageBox" class="message-box"></div>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-bar"></i> Statistics Overview</h2>
+                    <button id="btnRefreshStats" class="btn-icon" title="Refresh">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #3498db;">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-label">Total Leads</div>
+                                <div class="stat-value" id="statTotalLeads">-</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #27ae60;">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-label">Today</div>
+                                <div class="stat-value" id="statTodayLeads">-</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #f39c12;">
+                                <i class="fas fa-calendar-week"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-label">This Week</div>
+                                <div class="stat-value" id="statWeekLeads">-</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #9b59b6;">
+                                <i class="fas fa-sync-alt"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-label">Synced to Bitrix</div>
+                                <div class="stat-value" id="statSyncedLeads">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sync-info">
+                        <p><strong>Last sync:</strong> <span id="lastSyncTime">-</span></p>
+                        <p><strong>Failed syncs:</strong> <span id="failedSyncs">-</span></p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-history"></i> Recent Activity</h2>
+                </div>
+                <div class="card-body">
+                    <div id="recentActivity" class="activity-list">
+                        <p class="no-data">Loading...</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-info-circle"></i> System Information</h2>
+                </div>
+                <div class="card-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>Database:</strong>
+                            <span id="dbStatus">Connected</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Environment:</strong>
+                            <span>Production</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Version:</strong>
+                            <span>1.0.0</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/bitrix-integration.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

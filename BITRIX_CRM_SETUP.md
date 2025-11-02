@@ -4,11 +4,11 @@
 
 This guide will walk you through setting up Bitrix24 CRM integration for your ParkLine Residences apartment visualization website. The integration allows you to:
 
-- Automatically create leads when users express interest in apartments
-- Manage lead activities and interactions
-- Convert qualified leads to opportunities/deals
-- Track sales pipeline and analytics
-- Sync data between your website and Bitrix24
+- Automatically create leads in Bitrix24 when users express interest in apartments
+- Store lead backups in Supabase database for redundancy and analytics
+- Manage all CRM operations directly in Bitrix24
+- Track sales pipeline and conversions in your Bitrix24 account
+- Monitor sync status and connection health
 
 ## Prerequisites
 
@@ -66,11 +66,10 @@ BITRIX_WEBHOOK_URL: 'https://yourcompany.bitrix24.com/rest/1/abc123xyz456/'
 ### 2.2 Test the Integration
 
 1. Open your website in a browser
-2. Navigate to the CRM Dashboard: `crm-dashboard.html`
-3. Go to **Settings** in the left sidebar
-4. Paste your webhook URL in the input field
-5. Click **"Save & Test Connection"**
-6. You should see a success message if the connection works
+2. Navigate to the Admin Panel: `admin.html`
+3. Paste your webhook URL in the Bitrix24 configuration section
+4. Click **"Test Connection"**
+5. You should see a success message if the connection works
 
 ## Step 3: Customize Bitrix24 Fields (Optional)
 
@@ -123,7 +122,7 @@ Replace `UF_CRM_1`, `UF_CRM_2`, etc., with your actual custom field IDs from Bit
    - Apartment details in comments or custom fields
    - Source: "ParkLine Website"
 
-## Step 5: Set Up Lead Assignment (Optional)
+## Step 5: Managing Leads in Bitrix24
 
 ### 5.1 Automatic Assignment Rules
 
@@ -136,86 +135,40 @@ In Bitrix24, you can set up automatic assignment rules:
    - Specific user
    - Based on criteria (price range, apartment type, etc.)
 
-### 5.2 Manual Assignment
+### 5.2 Lead Management
 
-Sales managers can also manually assign leads through:
-- The CRM Dashboard on your website
-- Directly in Bitrix24
+All lead management happens directly in your Bitrix24 account:
+- View and update lead information
+- Add activities (calls, meetings, emails)
+- Move leads through your sales pipeline
+- Convert qualified leads to deals
+- Track opportunities and close rates
 
-## Step 6: Using the CRM Dashboard
+## Step 6: Data Storage Architecture
 
-### 6.1 Access the Dashboard
+### 6.1 Dual Storage System
 
-Navigate to: `https://yourwebsite.com/crm-dashboard.html`
+Your system uses a dual storage approach:
 
-### 6.2 Dashboard Features
+**Supabase Database (Local Backup):**
+- Stores all leads automatically
+- Provides data redundancy
+- Enables custom analytics and reporting
+- Maintains sync logs for troubleshooting
 
-**Dashboard View:**
-- Overview statistics (total leads, new leads, opportunities, won deals)
-- Conversion metrics
-- Recent leads list
+**Bitrix24 CRM (Primary System):**
+- Receives all leads via API
+- Main platform for lead management
+- Sales team works here exclusively
+- Full CRM features and automation
 
-**Leads View:**
-- Complete list of all leads
-- Search and filter capabilities
-- Click "View" to see lead details
+### 6.2 Benefits
 
-**Lead Details:**
-- Contact information
-- Apartment preferences
-- Activity history
-- Options to add activities or convert to opportunity
-
-**Opportunities View:**
-- All converted opportunities/deals
-- Deal values and stages
-- Expected close dates
-
-## Step 7: Activity Tracking Workflow
-
-### 7.1 Log Activities
-
-When a sales manager contacts a lead:
-
-1. Open the lead in the CRM Dashboard
-2. Click **"Add Activity"**
-3. Select activity type:
-   - Call
-   - Meeting
-   - Email
-   - Message
-   - Note
-4. Fill in details (duration, outcome, notes)
-5. Save
-
-### 7.2 Activities Sync to Bitrix24
-
-All activities are:
-- Saved to your Supabase database
-- Synced to Bitrix24
-- Visible in both systems
-
-## Step 8: Converting Leads to Opportunities
-
-### 8.1 Qualification Process
-
-When a lead is qualified:
-
-1. Open lead details
-2. Click **"Convert to Opportunity"**
-3. Fill in deal details:
-   - Title
-   - Deal value
-   - Expected close date
-   - Probability percentage
-   - Stage
-
-### 8.2 Track in Pipeline
-
-The opportunity/deal will appear in:
-- Opportunities view in CRM Dashboard
-- Bitrix24 Deals pipeline
-- Analytics and reporting
+This architecture ensures:
+- No data loss if Bitrix24 API is temporarily unavailable
+- Ability to create custom reports from Supabase
+- Complete audit trail of all submissions
+- Seamless user experience on website
 
 ## Troubleshooting
 
@@ -316,19 +269,30 @@ A: Yes, webhooks work with free plans, but have API rate limits.
 **Q: Can I customize the lead form fields?**
 A: Yes, edit `js/lead-form.js` and update the form HTML.
 
-**Q: How do I add more sales managers?**
-A: Authentication system for role-based access is planned for future updates.
+**Q: Where do I manage my sales team?**
+A: All sales team management, user permissions, and access control is handled in Bitrix24.
+
+**Q: Can I see lead statistics without logging into Bitrix24?**
+A: Yes, use the admin panel at `admin.html` to view basic statistics and sync status.
 
 ## Next Steps
 
 1. ✅ Set up Bitrix24 webhook
 2. ✅ Configure website integration
 3. ✅ Test lead creation
-4. ✅ Train sales team on CRM Dashboard
-5. ✅ Set up activity tracking workflow
-6. ✅ Configure automated assignment rules
-7. ✅ Monitor analytics and conversion rates
+4. ✅ Train sales team on Bitrix24 CRM
+5. ✅ Configure automated assignment rules
+6. ✅ Set up Bitrix24 workflows and automation
+7. ✅ Monitor leads and conversion rates in Bitrix24
 
----
+## Summary
 
-**Note**: This integration is part of **version FINAL 10** of your ParkLine Residences project. For technical support or custom modifications, refer to your development team.
+Your ParkLine Residences website now integrates seamlessly with Bitrix24 CRM:
+
+- **Website visitors** fill out the interest form on your website
+- **System automatically** saves lead to Supabase and creates lead in Bitrix24
+- **Sales team** manages all leads exclusively in Bitrix24
+- **Admin panel** provides configuration and basic monitoring
+- **Backup data** stored in Supabase for redundancy and reporting
+
+All CRM operations, lead management, and sales activities happen in your Bitrix24 account.

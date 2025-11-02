@@ -329,6 +329,25 @@ class SupabaseCRMClient {
             totalRevenue
         };
     }
+
+    async getSyncLogs(limit = 10) {
+        if (!this.isInitialized) {
+            throw new Error('Supabase client not initialized');
+        }
+
+        const { data, error } = await this.supabase
+            .from('sync_log')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(limit);
+
+        if (error) {
+            console.error('Supabase error getting sync logs:', error);
+            throw error;
+        }
+
+        return data || [];
+    }
 }
 
 window.supabaseCRM = new SupabaseCRMClient();
