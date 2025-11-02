@@ -16,22 +16,24 @@ class Analytics {
         }
 
         try {
-            // Import Supabase client dynamically
-            const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-            
-            this.supabase = createClient(
-                window.CONFIG.SUPABASE_URL, 
+            if (typeof supabase === 'undefined') {
+                Utils.error('❌ Supabase library not loaded. Please ensure @supabase/supabase-js is included.');
+                return false;
+            }
+
+            this.supabase = supabase.createClient(
+                window.CONFIG.SUPABASE_URL,
                 window.CONFIG.SUPABASE_ANON_KEY
             );
-            
+
             this.isInitialized = true;
-            
+
             if (this.debugMode) {
                 Utils.log('✅ Supabase client initialized for analytics');
                 Utils.log(`📊 Session ID: ${this.sessionId}`);
                 Utils.log(`👤 Visitor ID: ${this.visitorId}`);
             }
-            
+
             // Track page load event
             await this.trackEvent('page_load', {
                 url: window.location.href,
@@ -39,7 +41,7 @@ class Analytics {
                 screen_resolution: `${screen.width}x${screen.height}`,
                 viewport_size: `${window.innerWidth}x${window.innerHeight}`
             });
-            
+
             return true;
         } catch (error) {
             Utils.error('❌ Failed to initialize Supabase client:', error);
