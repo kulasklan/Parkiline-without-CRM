@@ -225,7 +225,13 @@ class LeadFormManager {
                 displayValue = fieldData.value;
 
                 if (fieldData.subjects && typeof fieldData.subjects === 'object') {
-                    displayKey = fieldData.subjects.mk || key;
+                    const currentLang = i18nManager.getCurrentLanguage();
+                    // Try current language first, then fallback to mk, then sq, then en, then original key
+                    displayKey = fieldData.subjects[currentLang] ||
+                               fieldData.subjects.mk ||
+                               fieldData.subjects.sq ||
+                               fieldData.subjects.en ||
+                               key;
                 }
             } else {
                 displayValue = fieldData;

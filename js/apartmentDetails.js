@@ -387,7 +387,7 @@ class ApartmentDetailsManager {
         
         // NEW: Use translated subject name based on current language
         let displaySubject = subject; // fallback to original
-        
+
         if (this.debugMode) {
             console.log(`[DEBUG] Processing subject: "${subject}" for language: "${i18nManager.getCurrentLanguage()}"`);
             console.log(`[DEBUG] fieldData.subjects:`, fieldData.subjects);
@@ -395,13 +395,18 @@ class ApartmentDetailsManager {
 
         if (fieldData.subjects) {
             const currentLang = i18nManager.getCurrentLanguage();
-            displaySubject = fieldData.subjects[currentLang] || fieldData.subjects.mk || subject;
+            // Try current language first, then fallback to mk, then sq, then en, then original subject
+            displaySubject = fieldData.subjects[currentLang] ||
+                           fieldData.subjects.mk ||
+                           fieldData.subjects.sq ||
+                           fieldData.subjects.en ||
+                           subject;
         }
         label.textContent = displaySubject + ':';
         label.style.color = '#ffffff'; // WHITE LABELS
-        
+
         if (this.debugMode) {
-            console.log(`[DEBUG] Final displaySubject: "${displaySubject}"`);
+            console.log(`[DEBUG] Final displaySubject: "${displaySubject}" (lang: ${i18nManager.getCurrentLanguage()})`);
         }
 
         const value = document.createElement('span');
@@ -583,15 +588,20 @@ class ApartmentDetailsManager {
     createLinkItem(subject, fieldData) {
         const item = document.createElement('div');
         item.className = 'detail-item';
-        
+
         const label = document.createElement('span');
         label.className = 'detail-label';
-        
+
         // NEW: Use translated subject name based on current language
         let displaySubject = subject; // fallback to original
         if (fieldData.subjects) {
             const currentLang = i18nManager.getCurrentLanguage();
-            displaySubject = fieldData.subjects[currentLang] || fieldData.subjects.mk || subject;
+            // Try current language first, then fallback to mk, then sq, then en, then original subject
+            displaySubject = fieldData.subjects[currentLang] ||
+                           fieldData.subjects.mk ||
+                           fieldData.subjects.sq ||
+                           fieldData.subjects.en ||
+                           subject;
         }
         label.textContent = displaySubject + ':';
         label.style.color = '#ffffff'; // WHITE LABELS
