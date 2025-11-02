@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏙️ ParkLine Residences Analytics</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .background-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+        
+        .floating-orb {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00d4ff, #7b68ee, #ff6b6b);
+            filter: blur(2px);
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .floating-orb:nth-child(1) {
+            width: 150px;
+            height: 150px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .floating-orb:nth-child(2) {
+            width: 100px;
+            height: 100px;
+            top: 60%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+        
+        .floating-orb:nth-child(3) {
+            width: 200px;
+            height: 200px;
+            bottom: 10%;
+            left: 50%;
+            animation-delay: 4s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(120deg); }
+            66% { transform: translateY(10px) rotate(240deg); }
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 0;
+        }
+        
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00d4ff, #7b68ee, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #a0a0a0;
+            font-weight: 300;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00d4ff, transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #a0a0a0;
+            font-weight: 400;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .chart-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-container h3 {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .chart {
+            height: 300px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(123, 104, 238, 0.1));
+            border-radius: 15px;
+            position: relative;
+            display: flex;
+            align-items: end;
+            justify-content: space-around;
+            padding: 20px;
+        }
+        
+        .bar {
+            width: 40px;
+            background: linear-gradient(to top, #00d4ff, #7b68ee);
+            border-radius: 20px 20px 0 0;
+            position: relative;
+            animation: growUp 2s ease-out;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+        
+        .bar:nth-child(1) { height: 60%; animation-delay: 0.1s; }
+        .bar:nth-child(2) { height: 80%; animation-delay: 0.2s; }
+        .bar:nth-child(3) { height: 45%; animation-delay: 0.3s; }
+        .bar:nth-child(4) { height: 90%; animation-delay: 0.4s; }
+        .bar:nth-child(5) { height: 70%; animation-delay: 0.5s; }
+        .bar:nth-child(6) { height: 55%; animation-delay: 0.6s; }
+        
+        @keyframes growUp {
+            from { height: 0; }
+        }
+        
+        .activity-feed {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .activity-feed h3 {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .activity-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding-left: 10px;
+        }
+        
+        .activity-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 15px;
+            animation: pulse 2s infinite;
+        }
+        
+        .activity-dot.view { background: #00d4ff; }
+        .activity-dot.click { background: #7b68ee; }
+        .activity-dot.filter { background: #ff6b6b; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .activity-text {
+            flex: 1;
+            font-size: 0.9rem;
+            color: #e0e0e0;
+        }
+        
+        .activity-time {
+            font-size: 0.8rem;
+            color: #a0a0a0;
+        }
+        
+        .bottom-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .top-apartments {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+        }
+        
+        .top-apartments h3 {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .apartment-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .apartment-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding-left: 10px;
+        }
+        
+        .apartment-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .apartment-rank {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00d4ff, #7b68ee);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .apartment-name {
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+        
+        .apartment-views {
+            color: #00d4ff;
+            font-weight: 600;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        
+        .metric-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #7b68ee;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid,
+            .bottom-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0, 212, 255, 0.3);
+            border-top: 3px solid #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-effects">
+        <div class="floating-orb"></div>
+        <div class="floating-orb"></div>
+        <div class="floating-orb"></div>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🏙️ ParkLine Analytics</h1>
+            <p>Real-time insights into your property engagement</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👁️</div>
+                <div class="stat-value" id="totalViews">24,582</div>
+                <div class="stat-label">Total Views Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🏠</div>
+                <div class="stat-value" id="activeListings">89</div>
+                <div class="stat-label">Active Listings</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="avgPrice">€2,450</div>
+                <div class="stat-label">Average Price</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-value" id="conversionRate">3.2%</div>
+                <div class="stat-label">Conversion Rate</div>
+            </div>
+        </div>
+        
+        <div class="dashboard-grid">
+            <div class="chart-container">
+                <h3>📈 Weekly Engagement Trends</h3>
+                <div class="chart">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+            </div>
+            
+            <div class="activity-feed">
+                <h3>🔥 Live Activity Feed</h3>
+                <div class="activity-item">
+                    <div class="activity-dot view"></div>
+                    <div class="activity-text">Unit A-402 viewed by visitor from Skopje</div>
+                    <div class="activity-time">2m ago</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot click"></div>
+                    <div class="activity-text">Contact form submitted for Unit B-301</div>
+                    <div class="activity-time">5m ago</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot filter"></div>
+                    <div class="activity-text">Filter applied: 2BR, €2000-2500</div>
+                    <div class="activity-time">8m ago</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot view"></div>
+                    <div class="activity-text">Virtual tour started for Unit C-205</div>
+                    <div class="activity-time">12m ago</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot click"></div>
+                    <div class="activity-text">Photo gallery opened for Unit A-101</div>
+                    <div class="activity-time">15m ago</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bottom-section">
+            <div class="top-apartments">
+                <h3>🏆 Top Performing Units</h3>
+                <div class="apartment-item">
+                    <div class="apartment-info">
+                        <div class="apartment-rank">1</div>
+                        <div class="apartment-name">Penthouse Suite A-2401</div>
+                    </div>
+                    <div class="apartment-views">1,247 views</div>
+                </div>
+                <div class="apartment-item">
+                    <div class="apartment-info">
+                        <div class="apartment-rank">2</div>
+                        <div class="apartment-name">Corner Unit B-1805</div>
+                    </div>
+                    <div class="apartment-views">982 views</div>
+                </div>
+                <div class="apartment-item">
+                    <div class="apartment-info">
+                        <div class="apartment-rank">3</div>
+                        <div class="apartment-name">Garden View C-301</div>
+                    </div>
+                    <div class="apartment-views">876 views</div>
+                </div>
+                <div class="apartment-item">
+                    <div class="apartment-info">
+                        <div class="apartment-rank">4</div>
+                        <div class="apartment-name">Studio Deluxe A-1201</div>
+                    </div>
+                    <div class="apartment-views">654 views</div>
+                </div>
+                <div class="apartment-item">
+                    <div class="apartment-info">
+                        <div class="apartment-rank">5</div>
+                        <div class="apartment-name">Family Unit B-902</div>
+                    </div>
+                    <div class="apartment-views">543 views</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <h3>📊 Performance Metrics</h3>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">28.5k</div>
+                        <div class="metric-label">Monthly Visits</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">4.2</div>
+                        <div class="metric-label">Avg. Session</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">67%</div>
+                        <div class="metric-label">Mobile Users</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">15</div>
+                        <div class="metric-label">Leads Today</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Real-time data simulation
+        function updateStats() {
+            const stats = {
+                totalViews: Math.floor(Math.random() * 1000) + 24000,
+                activeListings: Math.floor(Math.random() * 10) + 85,
+                avgPrice: Math.floor(Math.random() * 500) + 2200,
+                conversionRate: (Math.random() * 2 + 2.5).toFixed(1)
+            };
+            
+            Object.keys(stats).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    if (key === 'avgPrice') {
+                        element.textContent = '€' + stats[key].toLocaleString();
+                    } else if (key === 'conversionRate') {
+                        element.textContent = stats[key] + '%';
+                    } else {
+                        element.textContent = stats[key].toLocaleString();
+                    }
+                }
+            });
+        }
+        
+        // Animate bars on load
+        function animateBars() {
+            const bars = document.querySelectorAll('.bar');
+            bars.forEach((bar, index) => {
+                setTimeout(() => {
+                    bar.style.opacity = '1';
+                    bar.style.transform = 'scaleY(1)';
+                }, index * 200);
+            });
+        }
+        
+        // Add hover effects to cards
+        function initializeInteractions() {
+            const cards = document.querySelectorAll('.stat-card, .chart-container, .metric-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        }
+        
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', function() {
+            animateBars();
+            initializeInteractions();
+            
+            // Update stats every 10 seconds
+            setInterval(updateStats, 10000);
+        });
+        
+        // Add some dynamic activity items
+        const activities = [
+            { type: 'view', text: 'Unit D-1502 viewed by visitor from Prilep', time: '1m ago' },
+            { type: 'click', text: 'Brochure downloaded for Unit A-805', time: '3m ago' },
+            { type: 'filter', text: 'Price range updated: €1800-2200', time: '6m ago' },
+            { type: 'view', text: 'Floor plan viewed for Unit B-1203', time: '9m ago' }
+        ];
+        
+        function addDynamicActivity() {
+            const feed = document.querySelector('.activity-feed');
+            const randomActivity = activities[Math.floor(Math.random() * activities.length)];
+            
+            const activityItem = document.createElement('div');
+            activityItem.className = 'activity-item';
+            activityItem.innerHTML = `
+                <div class="activity-dot ${randomActivity.type}"></div>
+                <div class="activity-text">${randomActivity.text}</div>
+                <div class="activity-time">Just now</div>
+            `;
+            
+            const firstItem = feed.querySelector('.activity-item');
+            if (firstItem) {
+                feed.insertBefore(activityItem, firstItem);
+            }
+            
+            // Remove last item if more than 8 items
+            const items = feed.querySelectorAll('.activity-item');
+            if (items.length > 8) {
+                items[items.length - 1].remove();
+            }
+        }
+        
+        // Add new activity every 15 seconds
+        setInterval(addDynamicActivity, 15000);
+    </script>
+</body>
+</html>
