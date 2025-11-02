@@ -347,14 +347,7 @@ class LeadFormManager {
             source: `${window.location.pathname} - ${this.currentApartment?.view || 'View 1'}`
         };
 
-        console.log('📋 Extracted lead data:', leadData);
-
         try {
-            console.log('🔍 DIAGNOSTIC: Starting form submission...');
-            console.log('🔍 DIAGNOSTIC: Supabase CRM exists:', !!window.supabaseCRM);
-            console.log('🔍 DIAGNOSTIC: Supabase initialized:', window.supabaseCRM?.isInitialized);
-            console.log('🔍 DIAGNOSTIC: Supabase client:', window.supabaseCRM?.supabase);
-
             if (!window.supabaseCRM?.isInitialized) {
                 console.warn('⚠️ Supabase CRM not initialized, attempting re-initialization...');
                 if (window.supabaseCRM?.ensureInitialized) {
@@ -363,7 +356,6 @@ class LeadFormManager {
             }
 
             if (!window.supabaseCRM?.isInitialized) {
-                console.error('❌ DIAGNOSTIC: Supabase CRM not initialized after retry!');
                 throw new Error('Supabase CRM not initialized. Please check your configuration.');
             }
 
@@ -388,19 +380,14 @@ class LeadFormManager {
             leadData.bitrix_lead_id = bitrixLeadId;
 
             console.log('🔄 Saving lead to Supabase...');
-            console.log('🔍 DIAGNOSTIC: Lead data to save:', JSON.stringify(leadData, null, 2));
-
             const supabasePromise = window.supabaseCRM.createLead(leadData);
             const timeoutPromise = new Promise((_, reject) =>
                 setTimeout(() => reject(new Error('Supabase request timeout')), 10000)
             );
 
-            console.log('🔍 DIAGNOSTIC: Waiting for Supabase response...');
             const supabaseLead = await Promise.race([supabasePromise, timeoutPromise]);
             console.log('✅ Lead saved to Supabase:', supabaseLead?.id);
-            console.log('🔍 DIAGNOSTIC: Supabase response:', JSON.stringify(supabaseLead, null, 2));
 
-            console.log('🔄 Logging sync status...');
             await window.supabaseCRM.logSync({
                 sync_type: 'lead_create',
                 entity_type: 'lead',
@@ -421,10 +408,7 @@ class LeadFormManager {
         } catch (error) {
             console.error('❌ Error submitting lead:', error);
             console.error('❌ Error details:', error.message);
-            console.error('❌ Error stack:', error.stack);
-            console.error('🔍 DIAGNOSTIC: Error name:', error.name);
-            console.error('🔍 DIAGNOSTIC: Error code:', error.code);
-            console.error('🔍 DIAGNOSTIC: Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+            console.error('❌ Error code:', error.code);
 
             let errorMessage = `❌ ${i18nManager.t('lead-form-error-general')}`;
 
@@ -432,9 +416,9 @@ class LeadFormManager {
                 errorMessage = `❌ ${i18nManager.t('lead-form-error-config')}`;
             } else if (error.message.includes('timeout')) {
                 errorMessage = `❌ ${i18nManager.t('lead-form-error-timeout')}`;
-            } else if (error.message.includes('violates not-null') || error.message.includes('null value')) {
-                errorMessage = `❌ ${i18nManager.t('lead-form-error-required-fields')}`;
-            } else if (error.code === 'PGRST116' || error.code === '23502' || error.code === '42501') {
+            } else if (error.code === '42501' || error.message.includes('row-level security')) {
+                errorMessage = '❌ Database configuration error. Please contact support.';
+            } else if (error.message.includes('violates not-null') || error.message.includes('null value') || error.code === '23502' || error.code === 'PGRST116') {
                 errorMessage = `❌ ${i18nManager.t('lead-form-error-required-fields')}`;
             }
 

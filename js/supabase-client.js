@@ -17,36 +17,23 @@ class SupabaseCRMClient {
 
     init() {
         this.initAttempts++;
-        console.log(`🔍 DIAGNOSTIC: Initializing Supabase CRM client (attempt ${this.initAttempts}/${this.maxInitAttempts})...`);
-        console.log('🔍 DIAGNOSTIC: window.CONFIG exists:', !!window.CONFIG);
+        console.log(`🔄 Initializing Supabase CRM client (attempt ${this.initAttempts}/${this.maxInitAttempts})...`);
 
         const supabaseUrl = window.CONFIG?.SUPABASE_URL;
         const supabaseKey = window.CONFIG?.SUPABASE_ANON_KEY;
 
-        console.log('🔍 DIAGNOSTIC: Supabase URL:', supabaseUrl ? 'present' : 'missing');
-        console.log('🔍 DIAGNOSTIC: Supabase Key:', supabaseKey ? 'present' : 'missing');
-
         if (!supabaseUrl || !supabaseKey) {
             console.error('❌ Supabase configuration missing');
-            console.error('❌ URL:', supabaseUrl);
-            console.error('❌ Key:', supabaseKey ? 'EXISTS' : 'MISSING');
             return;
         }
 
-        console.log('🔍 DIAGNOSTIC: Checking for Supabase library...');
-        console.log('🔍 DIAGNOSTIC: typeof supabase:', typeof supabase);
-        console.log('🔍 DIAGNOSTIC: window.supabase:', typeof window.supabase);
-
         if (typeof supabase === 'undefined') {
             console.error('❌ Supabase library not loaded');
-            console.error('❌ Make sure the Supabase CDN script is loaded before this file');
             return;
         }
 
         try {
-            console.log('🔍 DIAGNOSTIC: Creating Supabase client...');
             this.supabase = supabase.createClient(supabaseUrl, supabaseKey);
-            console.log('🔍 DIAGNOSTIC: Supabase client created:', !!this.supabase);
 
             if (this.supabase) {
                 this.isInitialized = true;
@@ -55,22 +42,16 @@ class SupabaseCRMClient {
                 console.error('❌ Failed to create Supabase client');
             }
         } catch (error) {
-            console.error('❌ Error creating Supabase client:', error);
-            console.error('❌ Error details:', error.message);
+            console.error('❌ Error creating Supabase client:', error.message);
         }
     }
 
     async createLead(leadData) {
-        console.log('🔍 DIAGNOSTIC: createLead called');
-        console.log('🔍 DIAGNOSTIC: isInitialized:', this.isInitialized);
-        console.log('🔍 DIAGNOSTIC: supabase client exists:', !!this.supabase);
-
         if (!this.isInitialized) {
-            console.error('❌ Supabase client not initialized in createLead');
+            console.error('❌ Supabase client not initialized');
             throw new Error('Supabase client not initialized');
         }
 
-        console.log('🔍 DIAGNOSTIC: Preparing insert data...');
         const insertData = {
             apartment_id: leadData.apartment_id,
             apartment_floor: leadData.apartment_floor,
@@ -87,9 +68,6 @@ class SupabaseCRMClient {
             bitrix_lead_id: leadData.bitrix_lead_id
         };
 
-        console.log('🔍 DIAGNOSTIC: Insert data:', JSON.stringify(insertData, null, 2));
-        console.log('🔍 DIAGNOSTIC: Executing Supabase insert...');
-
         try {
             const { data, error } = await this.supabase
                 .from('leads')
@@ -97,15 +75,8 @@ class SupabaseCRMClient {
                 .select()
                 .single();
 
-            console.log('🔍 DIAGNOSTIC: Supabase response received');
-            console.log('🔍 DIAGNOSTIC: Data:', data);
-            console.log('🔍 DIAGNOSTIC: Error:', error);
-
             if (error) {
-                console.error('❌ Supabase error creating lead:', error);
-                console.error('❌ Error code:', error.code);
-                console.error('❌ Error message:', error.message);
-                console.error('❌ Error details:', JSON.stringify(error, null, 2));
+                console.error('❌ Supabase error creating lead:', error.code, error.message);
                 throw error;
             }
 
