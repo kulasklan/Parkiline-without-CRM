@@ -6,15 +6,20 @@ class SupabaseCRMClient {
     }
 
     init() {
-        const supabaseUrl = window.CONFIG?.SUPABASE_URL || import.meta?.env?.VITE_SUPABASE_URL;
-        const supabaseKey = window.CONFIG?.SUPABASE_ANON_KEY || import.meta?.env?.VITE_SUPABASE_ANON_KEY;
+        const supabaseUrl = window.CONFIG?.SUPABASE_URL;
+        const supabaseKey = window.CONFIG?.SUPABASE_ANON_KEY;
 
         if (!supabaseUrl || !supabaseKey) {
             console.error('Supabase configuration missing');
             return;
         }
 
-        this.supabase = window.supabase?.createClient(supabaseUrl, supabaseKey);
+        if (typeof supabase === 'undefined') {
+            console.error('Supabase library not loaded');
+            return;
+        }
+
+        this.supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
         if (this.supabase) {
             this.isInitialized = true;

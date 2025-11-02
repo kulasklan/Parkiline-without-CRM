@@ -165,7 +165,8 @@ class LeadFormManager {
 
         Object.entries(apartmentData).forEach(([key, value]) => {
             if (key && value && key.toLowerCase() !== 'статус') {
-                infoHTML += `<div class="apartment-info-item"><strong>${key}:</strong> ${value}</div>`;
+                const displayValue = typeof value === 'object' ? JSON.stringify(value) : value;
+                infoHTML += `<div class="apartment-info-item"><strong>${key}:</strong> ${displayValue}</div>`;
             }
         });
 
@@ -268,20 +269,25 @@ class LeadFormManager {
 
             if (window.bitrixIntegration?.isConfigured) {
                 try {
+                    console.log('🔄 Creating lead in Bitrix...');
                     const bitrixResult = await window.bitrixIntegration.createLead(leadData);
                     bitrixLeadId = bitrixResult.bitrixLeadId;
                     console.log('✅ Lead created in Bitrix:', bitrixLeadId);
                 } catch (error) {
-                    console.warn('Bitrix integration failed, continuing with local storage:', error);
+                    console.warn('⚠️ Bitrix integration failed, continuing with local storage:', error);
                     bitrixError = error.message;
                 }
+            } else {
+                console.log('ℹ️ Bitrix integration not configured, skipping...');
             }
 
             leadData.bitrix_lead_id = bitrixLeadId;
 
+            console.log('🔄 Saving lead to Supabase...');
             const supabaseLead = await window.supabaseCRM.createLead(leadData);
             console.log('✅ Lead saved to Supabase:', supabaseLead.id);
 
+            console.log('🔄 Logging sync status...');
             await window.supabaseCRM.logSync({
                 sync_type: 'lead_create',
                 entity_type: 'lead',
@@ -292,6 +298,7 @@ class LeadFormManager {
                 error_message: bitrixError
             });
 
+            console.log('✅ Form submission complete!');
             this.showSuccessMessage('✅ Вашето барање е успешно испратено! Наш тим ќе ве контактира наскоро.');
 
             setTimeout(() => {
@@ -299,7 +306,7 @@ class LeadFormManager {
             }, 3000);
 
         } catch (error) {
-            console.error('Error submitting lead:', error);
+            console.error('❌ Error submitting lead:', error);
             this.showErrorMessage('❌ Се случи грешка. Ве молиме обидете се повторно или контактирајте не директно.');
         } finally {
             this.isSubmitting = false;
