@@ -164,11 +164,11 @@ class ApartmentDetailsManager {
             }
             return;
         }
-        
+
         if (this.debugMode) {
             console.log(`✅ Adding interested button for ${apartment.status} apartment: ${apartment.id}`);
         }
-        
+
         // Create button container
         const buttonContainer = document.createElement('div');
         buttonContainer.style.cssText = `
@@ -177,39 +177,38 @@ class ApartmentDetailsManager {
             border-top: 1px solid rgba(148, 163, 184, 0.3);
             text-align: center;
         `;
-        
-        // Create the email link button
-        const interestedButton = document.createElement('a');
-        
-        // Generate mailto link with proper encoding
-        const emailSubject = i18nManager.getEmailSubject(apartment.id);
-        const emailBody = this.generateEmailBody(apartment);
-        const mailtoLink = `mailto:contact@izostone.mk?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-        
-        interestedButton.href = mailtoLink;
+
+        // Create the form button (FIXED: This button should open the form)
+        const interestedButton = document.createElement('button');
         interestedButton.className = 'interested-button';
         interestedButton.setAttribute('data-i18n', 'interested-button');
         interestedButton.textContent = i18nManager.t('interested-button');
-        
+
         // Button styling is handled by CSS class
-        
-        // Add click tracking for analytics (optional)
+
+        // Add click handler to open the form
         interestedButton.addEventListener('click', (e) => {
+            e.preventDefault();
             if (this.debugMode) {
-                console.log(`📧 User clicked interested button for apartment: ${apartment.id}`);
+                console.log(`📋 User clicked fill form button for apartment: ${apartment.id}`);
             }
 
-            // Show notification to user that email client will open
-            this.showEmailNotification();
+            // Open the lead form with apartment details
+            if (window.leadFormManager) {
+                window.leadFormManager.show(apartment);
+            }
 
             // Track event with Analytics module
             if (window.Analytics && window.Analytics.isInitialized) {
-                window.Analytics.trackInterestedButtonClick(apartment);
+                window.Analytics.trackEvent('form_opened', {
+                    apartment_id: apartment.id,
+                    apartment_status: apartment.status
+                });
             }
 
             // Optional: Track this event for analytics
             if (window.gtag) {
-                gtag('event', 'apartment_interest', {
+                gtag('event', 'form_opened', {
                     'apartment_id': apartment.id,
                     'apartment_status': apartment.status,
                     'apartment_bedrooms': apartment.bedrooms,
@@ -218,12 +217,12 @@ class ApartmentDetailsManager {
                 });
             }
         });
-        
+
         buttonContainer.appendChild(interestedButton);
         container.appendChild(buttonContainer);
-        
+
         if (this.debugMode) {
-            console.log(`✅ Added interested button for apartment ${apartment.id} with mailto: ${mailtoLink}`);
+            console.log(`✅ Added fill form button for apartment ${apartment.id}`);
         }
     }
     
@@ -319,18 +318,32 @@ class ApartmentDetailsManager {
         container.appendChild(badge);
 
         if (status === 'available') {
-            const interestBtn = document.createElement('button');
+            const interestBtn = document.createElement('a');
             interestBtn.className = 'interest-button';
             interestBtn.setAttribute('data-i18n', 'express-interest-button');
+
+            // Generate mailto link with proper encoding (FIXED: This button should open email)
+            const emailSubject = i18nManager.getEmailSubject(this.currentApartment?.id || 'apartment');
+            const emailBody = this.generateEmailBody(this.currentApartment);
+            const mailtoLink = `mailto:contact@izostone.mk?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+
+            interestBtn.href = mailtoLink;
             interestBtn.innerHTML = `
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                 </svg>
                 <span>${i18nManager.t('express-interest-button')}</span>
             `;
-            interestBtn.onclick = () => {
-                if (window.leadFormManager) {
-                    window.leadFormManager.show(this.currentApartment);
+            interestBtn.onclick = (e) => {
+                // Show notification to user that email client will open
+                this.showEmailNotification();
+
+                // Track event with Analytics module
+                if (window.Analytics && window.Analytics.isInitialized) {
+                    window.Analytics.trackEvent('email_sent', {
+                        apartment_id: this.currentApartment?.id,
+                        apartment_status: this.currentApartment?.status
+                    });
                 }
             };
             container.appendChild(interestBtn);

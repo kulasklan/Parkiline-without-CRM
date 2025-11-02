@@ -48,8 +48,8 @@ class LeadFormManager {
 
                                 <div class="form-group">
                                     <label>Телефонски број <span class="required">*</span></label>
-                                    <input type="tel" class="form-input" id="contactPhone" required>
-                                    <div class="form-error" id="errorPhone">Ве молиме внесете телефонски број</div>
+                                    <input type="tel" class="form-input" id="contactPhone" required placeholder="+389...">
+                                    <div class="form-error" id="errorPhone">Ве молиме внесете валиден телефонски број</div>
                                 </div>
 
                                 <div class="form-group">
@@ -229,9 +229,18 @@ class LeadFormManager {
             isValid = false;
         }
 
-        if (!phone.value.trim()) {
+        // Phone is required - validate it has value and basic format
+        const phoneValue = phone.value.trim();
+        if (!phoneValue) {
             this.showFieldError('contactPhone', 'errorPhone');
             isValid = false;
+        } else {
+            // Basic phone validation - at least 6 digits
+            const phoneDigits = phoneValue.replace(/\D/g, '');
+            if (phoneDigits.length < 6) {
+                this.showFieldError('contactPhone', 'errorPhone');
+                isValid = false;
+            }
         }
 
         return isValid;
@@ -335,6 +344,8 @@ class LeadFormManager {
 
         } catch (error) {
             console.error('❌ Error submitting lead:', error);
+            console.error('❌ Error details:', error.message);
+            console.error('❌ Error stack:', error.stack);
 
             let errorMessage = '❌ Се случи грешка. Ве молиме обидете се повторно или контактирајте не директно.';
 
@@ -342,6 +353,10 @@ class LeadFormManager {
                 errorMessage = '❌ Системот не е правилно конфигуриран. Ве молиме контактирајте не директно.';
             } else if (error.message.includes('timeout')) {
                 errorMessage = '❌ Барањето истече. Ве молиме проверете ја вашата интернет врска и обидете се повторно.';
+            } else if (error.message.includes('violates not-null') || error.message.includes('null value')) {
+                errorMessage = '❌ Ве молиме пополнете ги сите задолжителни полиња (име, емаил, телефон).';
+            } else if (error.code === 'PGRST116' || error.code === '23502') {
+                errorMessage = '❌ Ве молиме пополнете ги сите задолжителни полиња.';
             }
 
             this.showErrorMessage(errorMessage);
