@@ -163,10 +163,27 @@ class LeadFormManager {
             infoHTML += `<div class="apartment-info-item"><strong>Стан:</strong> ${apartment.id}</div>`;
         }
 
-        Object.entries(apartmentData).forEach(([key, value]) => {
-            if (key && value && key.toLowerCase() !== 'статус') {
-                const displayValue = typeof value === 'object' ? JSON.stringify(value) : value;
-                infoHTML += `<div class="apartment-info-item"><strong>${key}:</strong> ${displayValue}</div>`;
+        Object.entries(apartmentData).forEach(([key, fieldData]) => {
+            if (!key || !fieldData) return;
+
+            const keyLower = key.toLowerCase();
+            if (keyLower.includes('статус') || keyLower.includes('status')) return;
+
+            let displayValue = '';
+            let displayKey = key;
+
+            if (typeof fieldData === 'object' && fieldData.value !== undefined) {
+                displayValue = fieldData.value;
+
+                if (fieldData.subjects && typeof fieldData.subjects === 'object') {
+                    displayKey = fieldData.subjects.mk || key;
+                }
+            } else {
+                displayValue = fieldData;
+            }
+
+            if (displayValue && displayValue.toString().trim() !== '') {
+                infoHTML += `<div class="apartment-info-item"><strong>${displayKey}:</strong> ${displayValue}</div>`;
             }
         });
 
@@ -251,10 +268,10 @@ class LeadFormManager {
 
         const leadData = {
             apartment_id: this.currentApartment?.id,
-            apartment_floor: this.extractFloorNumber(apartmentData),
-            apartment_size: this.extractNumericValue(apartmentData['Вкупна површина'], 'm²'),
-            apartment_price: this.extractNumericValue(apartmentData['Цена'], '€'),
-            apartment_bedrooms: this.extractNumericValue(apartmentData['Спални'], ''),
+            apartment_floor: this.extractFloorNumber(apartmentData) || this.currentApartment?.floor,
+            apartment_size: this.extractNumericValue('површина', apartmentData) || this.currentApartment?.area,
+            apartment_price: this.extractNumericValue('цена', apartmentData) || this.extractNumericValue('price', apartmentData),
+            apartment_bedrooms: this.extractNumericValue('спални', apartmentData) || this.currentApartment?.bedrooms,
             contact_name: document.getElementById('contactName').value.trim(),
             contact_email: document.getElementById('contactEmail').value.trim(),
             contact_phone: document.getElementById('contactPhone').value.trim(),
@@ -263,7 +280,13 @@ class LeadFormManager {
             source: `${window.location.pathname} - ${this.currentApartment?.view || 'View 1'}`
         };
 
+        console.log('📋 Extracted lead data:', leadData);
+
         try {
+            if (!window.supabaseCRM?.isInitialized) {
+                throw new Error('Supabase CRM not initialized. Please check your configuration.');
+            }
+
             let bitrixLeadId = null;
             let bitrixError = null;
 
@@ -274,7 +297,7 @@ class LeadFormManager {
                     bitrixLeadId = bitrixResult.bitrixLeadId;
                     console.log('✅ Lead created in Bitrix:', bitrixLeadId);
                 } catch (error) {
-                    console.warn('⚠️ Bitrix integration failed, continuing with local storage:', error);
+                    console.warn('⚠️ Bitrix integration failed, continuing with Supabase:', error);
                     bitrixError = error.message;
                 }
             } else {
@@ -284,7 +307,12 @@ class LeadFormManager {
             leadData.bitrix_lead_id = bitrixLeadId;
 
             console.log('🔄 Saving lead to Supabase...');
-            const supabaseLead = await window.supabaseCRM.createLead(leadData);
+            const supabaseLead = await Promise.race([
+                window.supabaseCRM.createLead(leadData),
+                new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Supabase request timeout')), 10000)
+                )
+            ]);
             console.log('✅ Lead saved to Supabase:', supabaseLead.id);
 
             console.log('🔄 Logging sync status...');
@@ -296,7 +324,7 @@ class LeadFormManager {
                 status: bitrixLeadId ? 'success' : 'failed',
                 request_payload: leadData,
                 error_message: bitrixError
-            });
+            }).catch(err => console.warn('⚠️ Failed to log sync:', err));
 
             console.log('✅ Form submission complete!');
             this.showSuccessMessage('✅ Вашето барање е успешно испратено! Наш тим ќе ве контактира наскоро.');
@@ -307,7 +335,16 @@ class LeadFormManager {
 
         } catch (error) {
             console.error('❌ Error submitting lead:', error);
-            this.showErrorMessage('❌ Се случи грешка. Ве молиме обидете се повторно или контактирајте не директно.');
+
+            let errorMessage = '❌ Се случи грешка. Ве молиме обидете се повторно или контактирајте не директно.';
+
+            if (error.message.includes('not initialized')) {
+                errorMessage = '❌ Системот не е правилно конфигуриран. Ве молиме контактирајте не директно.';
+            } else if (error.message.includes('timeout')) {
+                errorMessage = '❌ Барањето истече. Ве молиме проверете ја вашата интернет врска и обидете се повторно.';
+            }
+
+            this.showErrorMessage(errorMessage);
         } finally {
             this.isSubmitting = false;
             this.setSubmitButtonLoading(false);
@@ -315,14 +352,50 @@ class LeadFormManager {
     }
 
     extractFloorNumber(data) {
-        const floorStr = data['Кат'] || data['Спрат'] || '';
+        let floorStr = '';
+
+        Object.entries(data).forEach(([key, fieldData]) => {
+            if (floorStr) return;
+
+            const keyword = typeof fieldData === 'object' && fieldData.filterKeyword
+                ? fieldData.filterKeyword.toLowerCase()
+                : '';
+            const keyLower = key.toLowerCase();
+
+            if (keyword.includes('floor') || keyLower.includes('спрат') || keyLower.includes('кат')) {
+                floorStr = typeof fieldData === 'object' && fieldData.value !== undefined
+                    ? fieldData.value.toString()
+                    : fieldData.toString();
+            }
+        });
+
+        if (!floorStr) return null;
+
         const match = floorStr.match(/\d+/);
         return match ? parseInt(match[0]) : null;
     }
 
-    extractNumericValue(str, suffix) {
-        if (!str) return null;
-        const numStr = str.replace(suffix, '').replace(/,/g, '').trim();
+    extractNumericValue(fieldKey, data, suffix = '') {
+        if (!data) return null;
+
+        let valueStr = '';
+
+        Object.entries(data).forEach(([key, fieldData]) => {
+            if (valueStr) return;
+
+            const keyLower = key.toLowerCase();
+            const fieldKeyLower = fieldKey.toLowerCase();
+
+            if (keyLower.includes(fieldKeyLower)) {
+                valueStr = typeof fieldData === 'object' && fieldData.value !== undefined
+                    ? fieldData.value.toString()
+                    : fieldData.toString();
+            }
+        });
+
+        if (!valueStr) return null;
+
+        const numStr = valueStr.replace(suffix, '').replace(/[^\d.,]/g, '').replace(/,/g, '.').trim();
         const num = parseFloat(numStr);
         return isNaN(num) ? null : num;
     }

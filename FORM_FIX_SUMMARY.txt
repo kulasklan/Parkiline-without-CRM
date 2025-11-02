@@ -1,0 +1,67 @@
+LEAD FORM FIX SUMMARY
+=====================
+
+Issue: Form was showing raw JSON objects instead of values and getting stuck during submission
+
+Changes Made to js/lead-form.js:
+
+1. Fixed populateApartmentInfo() method (lines 154-191):
+   - Now properly extracts .value from nested field objects
+   - Uses multi-language subjects (fieldData.subjects.mk) for display labels
+   - Filters out status fields to avoid duplication
+   - Handles both object format {value: "..."} and simple string format for backward compatibility
+
+2. Rewrote extractFloorNumber() method (lines 334-356):
+   - Iterates through all data fields instead of looking for specific keys
+   - Checks filterKeyword and field names in multiple languages
+   - Properly extracts .value from object structure
+   - Falls back to apartment.floor if extraction fails
+
+3. Rewrote extractNumericValue() method (lines 358-381):
+   - Changed signature to extractNumericValue(fieldKey, data, suffix)
+   - Searches for fields by partial key match (e.g., "површина", "цена")
+   - Extracts .value from nested objects
+   - Better number parsing with support for decimals and currency symbols
+
+4. Updated handleSubmit() lead data extraction (lines 269-283):
+   - Uses new extraction methods with proper parameters
+   - Falls back to currentApartment properties if extraction fails
+   - Added console logging to debug extracted values
+   - Better field key matching for multi-language support
+
+5. Enhanced error handling in submission (lines 285-351):
+   - Added Supabase initialization check before submission
+   - Implemented 10-second timeout for Supabase requests using Promise.race()
+   - Improved error messages for different failure scenarios:
+     * "not initialized" → Configuration error message
+     * "timeout" → Network timeout message
+     * Generic errors → General retry message
+   - Non-blocking sync log (catches errors without failing submission)
+
+6. Improved logging throughout:
+   - Added detailed console logs for debugging
+   - Logs extracted lead data before submission
+   - Logs each step of the submission process
+
+Testing:
+--------
+✅ JavaScript syntax validated - no errors
+✅ Supabase configuration verified in config.js
+✅ All extraction methods handle both object and simple value formats
+
+Expected Results:
+-----------------
+1. Form now displays apartment details as clean values like "9" instead of JSON objects
+2. Form submission no longer gets stuck - has timeout protection
+3. Better error messages guide users when problems occur
+4. Falls back gracefully when data extraction fails
+5. Works with both current Google Sheets structure and legacy data formats
+
+Next Steps for User:
+--------------------
+1. Test the form by clicking on an apartment
+2. Check that details display correctly (not as JSON)
+3. Fill out and submit the form
+4. Verify submission completes or shows clear error message
+5. Check browser console for detailed logs if issues persist
+6. Verify leads appear in Supabase database and/or Bitrix CRM
