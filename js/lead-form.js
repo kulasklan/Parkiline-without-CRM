@@ -134,6 +134,9 @@ class LeadFormManager {
         }
 
         this.currentApartment = apartment;
+
+        // Update translations first, then populate apartment info to avoid recursion
+        this.updateFormTranslations();
         this.populateApartmentInfo(apartment);
         this.resetForm();
 
@@ -192,10 +195,9 @@ class LeadFormManager {
             }
         }
 
-        // Re-populate apartment info with current language
-        if (this.currentApartment) {
-            this.populateApartmentInfo(this.currentApartment);
-        }
+        // REMOVED: populateApartmentInfo() call here to break infinite recursion loop
+        // Apartment info is populated separately in show() method
+        // When language changes, the next time form is opened it will have correct translations
     }
 
     populateApartmentInfo(apartment) {
@@ -236,8 +238,8 @@ class LeadFormManager {
 
         infoContainer.innerHTML = infoHTML;
 
-        // Update translations for dynamically added content
-        this.updateFormTranslations();
+        // REMOVED: updateFormTranslations() call here to break infinite recursion loop
+        // Translations are updated in show() method and on language change event
     }
 
     resetForm() {
