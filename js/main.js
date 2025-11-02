@@ -21,10 +21,15 @@ class ApartmentVisualizationApp {
         try {
             // Initialize i18n system first
             i18nManager.initialize();
-            
+
             // Initialize mobile filter manager
             if (window.mobileFilterManager) {
                 window.mobileFilterManager.initialize();
+            }
+
+            // Initialize Bitrix integration if configured
+            if (window.CONFIG?.BITRIX_WEBHOOK_URL) {
+                window.bitrixIntegration.configure(window.CONFIG.BITRIX_WEBHOOK_URL);
             }
             
             // Show loading state with progress

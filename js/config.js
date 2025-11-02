@@ -55,9 +55,12 @@ window.CONFIG = {
     // Debug mode
     DEBUG: true,
     
-    // Supabase Configuration for Analytics
-    SUPABASE_URL: 'https://pznmasitmormnbwvuktb.supabase.co',
-    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB6bm1hc2l0bW9ybW5id3Z1a3RiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4NTAyOTIsImV4cCI6MjA3MjQyNjI5Mn0.IgmAQ8mJNxMIf9uWtoGg69alCK8MmP12Roi4xaEcNEw'
+    // Supabase Configuration for Analytics and CRM
+    SUPABASE_URL: 'https://zjplatuejcabdozskpkh.supabase.co',
+    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcGxhdHVlamNhYmRvenNrcGtoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIwNjk5MDQsImV4cCI6MjA3NzY0NTkwNH0.uWhrN4IWtcv7px-K1GVAjAX6FjcYm7Am3znFK32wucg',
+
+    // Bitrix24 Webhook URL (configure this with your Bitrix24 webhook)
+    BITRIX_WEBHOOK_URL: ''
 };
 
 // Utility functions
