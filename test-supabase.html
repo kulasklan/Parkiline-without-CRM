@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Connection Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .test-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .test-button:hover {
+            background: #45a049;
+        }
+        .test-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .log-area {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 4px;
+            margin-top: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔍 Supabase Connection Diagnostic Tool</h1>
+        <p>This tool helps diagnose issues with the Supabase connection and form submission.</p>
+
+        <div id="statusContainer"></div>
+
+        <div>
+            <button class="test-button" onclick="testSupabaseConnection()">Test Supabase Connection</button>
+            <button class="test-button" onclick="testBitrixConnection()">Test Bitrix Connection</button>
+            <button class="test-button" onclick="testFormSubmission()">Test Form Submission</button>
+            <button class="test-button" onclick="clearLogs()">Clear Logs</button>
+        </div>
+
+        <div class="log-area" id="logArea">Console logs will appear here...</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/bitrix-integration.js"></script>
+
+    <script>
+        const logArea = document.getElementById('logArea');
+        const statusContainer = document.getElementById('statusContainer');
+        let logs = [];
+
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            logs.push(logEntry);
+            logArea.textContent = logs.join('\n');
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+
+        function addStatus(message, type = 'info') {
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+            statusContainer.appendChild(statusDiv);
+        }
+
+        function clearLogs() {
+            logs = [];
+            logArea.textContent = 'Console logs cleared...';
+            statusContainer.innerHTML = '';
+        }
+
+        const originalConsoleLog = console.log;
+        const originalConsoleError = console.error;
+        const originalConsoleWarn = console.warn;
+
+        console.log = function(...args) {
+            originalConsoleLog.apply(console, args);
+            addLog(args.join(' '), 'info');
+        };
+
+        console.error = function(...args) {
+            originalConsoleError.apply(console, args);
+            addLog('ERROR: ' + args.join(' '), 'error');
+        };
+
+        console.warn = function(...args) {
+            originalConsoleWarn.apply(console, args);
+            addLog('WARN: ' + args.join(' '), 'warn');
+        };
+
+        async function testSupabaseConnection() {
+            clearLogs();
+            addStatus('🔄 Testing Supabase connection...', 'info');
+            addLog('=== SUPABASE CONNECTION TEST ===');
+
+            try {
+                addLog('Checking Supabase configuration...');
+                addLog('CONFIG object: ' + (window.CONFIG ? 'EXISTS' : 'MISSING'));
+                addLog('SUPABASE_URL: ' + (window.CONFIG?.SUPABASE_URL || 'MISSING'));
+                addLog('SUPABASE_ANON_KEY: ' + (window.CONFIG?.SUPABASE_ANON_KEY ? 'EXISTS' : 'MISSING'));
+
+                addLog('Checking Supabase CRM client...');
+                addLog('supabaseCRM object: ' + (window.supabaseCRM ? 'EXISTS' : 'MISSING'));
+                addLog('supabaseCRM.isInitialized: ' + window.supabaseCRM?.isInitialized);
+                addLog('supabaseCRM.supabase: ' + (window.supabaseCRM?.supabase ? 'EXISTS' : 'MISSING'));
+
+                if (!window.supabaseCRM?.isInitialized) {
+                    throw new Error('Supabase CRM not initialized');
+                }
+
+                addLog('Testing database connection by querying leads table...');
+                const { data, error } = await window.supabaseCRM.supabase
+                    .from('leads')
+                    .select('count')
+                    .limit(1);
+
+                if (error) {
+                    throw new Error('Database query failed: ' + error.message);
+                }
+
+                addLog('✅ Database connection successful!');
+                addStatus('✅ Supabase connection is working correctly', 'success');
+
+            } catch (error) {
+                addLog('❌ Connection test failed: ' + error.message);
+                addStatus('❌ Supabase connection failed: ' + error.message, 'error');
+            }
+        }
+
+        async function testBitrixConnection() {
+            clearLogs();
+            addStatus('🔄 Testing Bitrix connection...', 'info');
+            addLog('=== BITRIX CONNECTION TEST ===');
+
+            try {
+                addLog('Checking Bitrix configuration...');
+                addLog('bitrixIntegration object: ' + (window.bitrixIntegration ? 'EXISTS' : 'MISSING'));
+                addLog('bitrixIntegration.isConfigured: ' + window.bitrixIntegration?.isConfigured);
+                addLog('bitrixIntegration.webhookUrl: ' + (window.bitrixIntegration?.webhookUrl ? 'EXISTS' : 'MISSING'));
+
+                if (!window.bitrixIntegration?.isConfigured) {
+                    throw new Error('Bitrix integration not configured');
+                }
+
+                addLog('Testing Bitrix API connection...');
+                const result = await window.bitrixIntegration.testConnection();
+
+                if (result.success) {
+                    addLog('✅ Bitrix connection successful!');
+                    addStatus('✅ Bitrix connection is working correctly', 'success');
+                } else {
+                    throw new Error(result.message);
+                }
+
+            } catch (error) {
+                addLog('❌ Connection test failed: ' + error.message);
+                addStatus('❌ Bitrix connection failed: ' + error.message, 'error');
+            }
+        }
+
+        async function testFormSubmission() {
+            clearLogs();
+            addStatus('🔄 Testing form submission with test data...', 'info');
+            addLog('=== FORM SUBMISSION TEST ===');
+
+            try {
+                const testLeadData = {
+                    apartment_id: 'TEST-001',
+                    apartment_floor: 5,
+                    apartment_size: 85.5,
+                    apartment_price: 150000,
+                    apartment_bedrooms: 2,
+                    contact_name: 'Test User',
+                    contact_email: 'test@example.com',
+                    contact_phone: '+389 70 123 456',
+                    preferred_contact_method: 'phone',
+                    message: 'This is a test submission from the diagnostic tool',
+                    source: 'Diagnostic Tool'
+                };
+
+                addLog('Test lead data prepared:');
+                addLog(JSON.stringify(testLeadData, null, 2));
+
+                addLog('Submitting to Supabase...');
+                const lead = await window.supabaseCRM.createLead(testLeadData);
+
+                addLog('✅ Lead created successfully!');
+                addLog('Lead ID: ' + lead.id);
+                addLog('Created at: ' + lead.created_at);
+                addStatus('✅ Test lead submitted successfully! Check your Supabase dashboard.', 'success');
+
+            } catch (error) {
+                addLog('❌ Submission test failed: ' + error.message);
+                addLog('Error details: ' + JSON.stringify(error, null, 2));
+                addStatus('❌ Form submission failed: ' + error.message, 'error');
+            }
+        }
+
+        window.addEventListener('load', () => {
+            addLog('Test page loaded successfully');
+            addLog('Running initial diagnostics...');
+            setTimeout(() => {
+                addLog('Supabase library: ' + (typeof supabase !== 'undefined' ? 'LOADED' : 'NOT LOADED'));
+                addLog('CONFIG: ' + (window.CONFIG ? 'LOADED' : 'NOT LOADED'));
+                addLog('supabaseCRM: ' + (window.supabaseCRM ? 'LOADED' : 'NOT LOADED'));
+                addLog('bitrixIntegration: ' + (window.bitrixIntegration ? 'LOADED' : 'NOT LOADED'));
+                addLog('\nReady to run tests!');
+            }, 500);
+        });
+    </script>
+</body>
+</html>

@@ -28,8 +28,27 @@ class ApartmentVisualizationApp {
             }
 
             // Initialize Bitrix integration if configured
+            console.log('🔍 DIAGNOSTIC: Checking Bitrix configuration...');
+            console.log('🔍 DIAGNOSTIC: CONFIG exists:', !!window.CONFIG);
+            console.log('🔍 DIAGNOSTIC: BITRIX_WEBHOOK_URL:', window.CONFIG?.BITRIX_WEBHOOK_URL ? 'present' : 'missing');
+
             if (window.CONFIG?.BITRIX_WEBHOOK_URL) {
+                console.log('🔍 DIAGNOSTIC: Configuring Bitrix integration...');
                 window.bitrixIntegration.configure(window.CONFIG.BITRIX_WEBHOOK_URL);
+                console.log('✅ Bitrix integration configured');
+            } else {
+                console.log('ℹ️ Bitrix integration not configured (webhook URL missing)');
+            }
+
+            // Verify Supabase CRM initialization
+            console.log('🔍 DIAGNOSTIC: Verifying Supabase CRM initialization...');
+            console.log('🔍 DIAGNOSTIC: supabaseCRM exists:', !!window.supabaseCRM);
+            console.log('🔍 DIAGNOSTIC: supabaseCRM initialized:', window.supabaseCRM?.isInitialized);
+
+            if (!window.supabaseCRM?.isInitialized) {
+                console.warn('⚠️ WARNING: Supabase CRM not initialized! Form submissions will fail.');
+            } else {
+                console.log('✅ Supabase CRM is ready');
             }
             
             // Show loading state with progress

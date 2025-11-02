@@ -19,7 +19,12 @@ class BitrixIntegration {
     }
 
     async createLead(leadData) {
+        console.log('🔍 DIAGNOSTIC: Bitrix createLead called');
+        console.log('🔍 DIAGNOSTIC: Bitrix isConfigured:', this.isConfigured);
+        console.log('🔍 DIAGNOSTIC: Bitrix webhookUrl:', this.webhookUrl ? 'present' : 'missing');
+
         if (!this.isConfigured) {
+            console.error('❌ Bitrix integration not configured');
             throw new Error('Bitrix integration not configured. Please set webhook URL.');
         }
 
@@ -41,7 +46,10 @@ class BitrixIntegration {
             }
         };
 
+        console.log('🔍 DIAGNOSTIC: Bitrix lead data prepared:', JSON.stringify(bitrixLeadData, null, 2));
+
         try {
+            console.log('🔍 DIAGNOSTIC: Sending request to Bitrix...');
             const response = await fetch(`${this.webhookUrl}/crm.lead.add.json`, {
                 method: 'POST',
                 headers: {
@@ -50,13 +58,20 @@ class BitrixIntegration {
                 body: JSON.stringify(bitrixLeadData)
             });
 
+            console.log('🔍 DIAGNOSTIC: Bitrix response status:', response.status);
+            console.log('🔍 DIAGNOSTIC: Bitrix response ok:', response.ok);
+
             if (!response.ok) {
+                const errorText = await response.text();
+                console.error('❌ Bitrix API error response:', errorText);
                 throw new Error(`Bitrix API error: ${response.status} ${response.statusText}`);
             }
 
             const result = await response.json();
+            console.log('🔍 DIAGNOSTIC: Bitrix result:', JSON.stringify(result, null, 2));
 
             if (result.error) {
+                console.error('❌ Bitrix returned error:', result.error_description || result.error);
                 throw new Error(`Bitrix error: ${result.error_description || result.error}`);
             }
 
@@ -71,7 +86,8 @@ class BitrixIntegration {
             };
 
         } catch (error) {
-            console.error('Failed to create lead in Bitrix:', error);
+            console.error('❌ Failed to create lead in Bitrix:', error);
+            console.error('❌ Bitrix error details:', error.message);
             throw error;
         }
     }

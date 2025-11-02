@@ -292,7 +292,20 @@ class LeadFormManager {
         console.log('📋 Extracted lead data:', leadData);
 
         try {
+            console.log('🔍 DIAGNOSTIC: Starting form submission...');
+            console.log('🔍 DIAGNOSTIC: Supabase CRM exists:', !!window.supabaseCRM);
+            console.log('🔍 DIAGNOSTIC: Supabase initialized:', window.supabaseCRM?.isInitialized);
+            console.log('🔍 DIAGNOSTIC: Supabase client:', window.supabaseCRM?.supabase);
+
             if (!window.supabaseCRM?.isInitialized) {
+                console.warn('⚠️ Supabase CRM not initialized, attempting re-initialization...');
+                if (window.supabaseCRM?.ensureInitialized) {
+                    window.supabaseCRM.ensureInitialized();
+                }
+            }
+
+            if (!window.supabaseCRM?.isInitialized) {
+                console.error('❌ DIAGNOSTIC: Supabase CRM not initialized after retry!');
                 throw new Error('Supabase CRM not initialized. Please check your configuration.');
             }
 
@@ -307,6 +320,7 @@ class LeadFormManager {
                     console.log('✅ Lead created in Bitrix:', bitrixLeadId);
                 } catch (error) {
                     console.warn('⚠️ Bitrix integration failed, continuing with Supabase:', error);
+                    console.warn('⚠️ Bitrix error details:', error.message, error.stack);
                     bitrixError = error.message;
                 }
             } else {
@@ -316,13 +330,17 @@ class LeadFormManager {
             leadData.bitrix_lead_id = bitrixLeadId;
 
             console.log('🔄 Saving lead to Supabase...');
-            const supabaseLead = await Promise.race([
-                window.supabaseCRM.createLead(leadData),
-                new Promise((_, reject) =>
-                    setTimeout(() => reject(new Error('Supabase request timeout')), 10000)
-                )
-            ]);
-            console.log('✅ Lead saved to Supabase:', supabaseLead.id);
+            console.log('🔍 DIAGNOSTIC: Lead data to save:', JSON.stringify(leadData, null, 2));
+
+            const supabasePromise = window.supabaseCRM.createLead(leadData);
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Supabase request timeout')), 10000)
+            );
+
+            console.log('🔍 DIAGNOSTIC: Waiting for Supabase response...');
+            const supabaseLead = await Promise.race([supabasePromise, timeoutPromise]);
+            console.log('✅ Lead saved to Supabase:', supabaseLead?.id);
+            console.log('🔍 DIAGNOSTIC: Supabase response:', JSON.stringify(supabaseLead, null, 2));
 
             console.log('🔄 Logging sync status...');
             await window.supabaseCRM.logSync({
@@ -346,6 +364,9 @@ class LeadFormManager {
             console.error('❌ Error submitting lead:', error);
             console.error('❌ Error details:', error.message);
             console.error('❌ Error stack:', error.stack);
+            console.error('🔍 DIAGNOSTIC: Error name:', error.name);
+            console.error('🔍 DIAGNOSTIC: Error code:', error.code);
+            console.error('🔍 DIAGNOSTIC: Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
 
             let errorMessage = '❌ Се случи грешка. Ве молиме обидете се повторно или контактирајте не директно.';
 
