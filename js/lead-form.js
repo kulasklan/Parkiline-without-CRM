@@ -17,7 +17,7 @@ class LeadFormManager {
             <div class="lead-form-overlay" id="leadFormOverlay">
                 <div class="lead-form-container">
                     <div class="lead-form-header">
-                        <h2 id="leadFormTitle" data-i18n="express-interest-button">Испрати емаил</h2>
+                        <h2 id="leadFormTitle" data-i18n="lead-form-title"></h2>
                         <button class="lead-form-close" id="leadFormClose">&times;</button>
                     </div>
                     <div class="lead-form-body">
@@ -25,57 +25,57 @@ class LeadFormManager {
                         <div class="error-message" id="leadErrorMessage"></div>
 
                         <div class="apartment-summary" id="apartmentSummary">
-                            <h3>Детали за станот</h3>
+                            <h3 data-i18n="lead-form-apartment-details"></h3>
                             <div class="apartment-info" id="apartmentInfo">
                             </div>
                         </div>
 
                         <form id="leadForm">
                             <div class="form-section">
-                                <h3>Ваши информации</h3>
+                                <h3 data-i18n="lead-form-your-info"></h3>
 
                                 <div class="form-group">
-                                    <label>Име и презиме <span class="required">*</span></label>
+                                    <label><span data-i18n="lead-form-name-label"></span> <span class="required" data-i18n="lead-form-required"></span></label>
                                     <input type="text" class="form-input" id="contactName" required>
-                                    <div class="form-error" id="errorName">Ве молиме внесете го вашето име</div>
+                                    <div class="form-error" id="errorName" data-i18n="lead-form-error-name"></div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Емаил адреса <span class="required">*</span></label>
+                                    <label><span data-i18n="lead-form-email-label"></span> <span class="required" data-i18n="lead-form-required"></span></label>
                                     <input type="email" class="form-input" id="contactEmail" required>
-                                    <div class="form-error" id="errorEmail">Ве молиме внесете валидна емаил адреса</div>
+                                    <div class="form-error" id="errorEmail" data-i18n="lead-form-error-email"></div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Телефонски број <span class="required">*</span></label>
-                                    <input type="tel" class="form-input" id="contactPhone" required placeholder="+389...">
-                                    <div class="form-error" id="errorPhone">Ве молиме внесете валиден телефонски број</div>
+                                    <label><span data-i18n="lead-form-phone-label"></span> <span class="required" data-i18n="lead-form-required"></span></label>
+                                    <input type="tel" class="form-input" id="contactPhone" required data-placeholder-i18n="lead-form-phone-placeholder">
+                                    <div class="form-error" id="errorPhone" data-i18n="lead-form-error-phone"></div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Преферирам контакт преку</label>
+                                    <label data-i18n="lead-form-contact-method-label"></label>
                                     <div class="contact-methods">
                                         <label class="contact-method-option selected">
                                             <input type="radio" name="contactMethod" value="phone" checked>
-                                            <span>📞 Телефон</span>
+                                            <span>📞 <span data-i18n="lead-form-contact-phone"></span></span>
                                         </label>
                                         <label class="contact-method-option">
                                             <input type="radio" name="contactMethod" value="email">
-                                            <span>✉️ Емаил</span>
+                                            <span>✉️ <span data-i18n="lead-form-contact-email"></span></span>
                                         </label>
                                     </div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Дополнителна порака (опционално)</label>
-                                    <textarea class="form-textarea" id="contactMessage" placeholder="Напишете ја вашата порака овде..."></textarea>
+                                    <label data-i18n="lead-form-message-label"></label>
+                                    <textarea class="form-textarea" id="contactMessage" data-placeholder-i18n="lead-form-message-placeholder"></textarea>
                                 </div>
                             </div>
 
                             <div class="form-footer">
-                                <button type="button" class="btn-cancel" id="btnCancel">Откажи</button>
+                                <button type="button" class="btn-cancel" id="btnCancel" data-i18n="lead-form-cancel"></button>
                                 <button type="submit" class="btn-submit" id="btnSubmit">
-                                    <span id="submitText">Испрати барање</span>
+                                    <span id="submitText" data-i18n="lead-form-submit"></span>
                                 </button>
                             </div>
                         </form>
@@ -85,6 +85,9 @@ class LeadFormManager {
         `;
 
         document.body.insertAdjacentHTML('beforeend', formHTML);
+
+        // Apply translations immediately after creating HTML
+        this.updateFormTranslations();
     }
 
     attachEventListeners() {
@@ -116,6 +119,11 @@ class LeadFormManager {
             if (e.key === 'Escape' && this.isVisible) {
                 this.hide();
             }
+        });
+
+        // Listen for language changes
+        document.addEventListener('languageChanged', () => {
+            this.updateFormTranslations();
         });
     }
 
@@ -151,6 +159,45 @@ class LeadFormManager {
         }
     }
 
+    updateFormTranslations() {
+        // Update all elements with data-i18n attributes
+        const elements = document.querySelectorAll('#leadFormOverlay [data-i18n]');
+        elements.forEach(element => {
+            const key = element.getAttribute('data-i18n');
+            const translation = i18nManager.t(key);
+
+            if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                // Don't change input values, only their attributes
+            } else {
+                element.textContent = translation;
+            }
+        });
+
+        // Update placeholders
+        const phonePlaceholder = document.querySelector('[data-placeholder-i18n="lead-form-phone-placeholder"]');
+        if (phonePlaceholder) {
+            phonePlaceholder.placeholder = i18nManager.t('lead-form-phone-placeholder');
+        }
+
+        const messagePlaceholder = document.querySelector('[data-placeholder-i18n="lead-form-message-placeholder"]');
+        if (messagePlaceholder) {
+            messagePlaceholder.placeholder = i18nManager.t('lead-form-message-placeholder');
+        }
+
+        // Update submit button if not loading
+        if (!this.isSubmitting) {
+            const submitText = document.getElementById('submitText');
+            if (submitText) {
+                submitText.textContent = i18nManager.t('lead-form-submit');
+            }
+        }
+
+        // Re-populate apartment info with current language
+        if (this.currentApartment) {
+            this.populateApartmentInfo(this.currentApartment);
+        }
+    }
+
     populateApartmentInfo(apartment) {
         const infoContainer = document.getElementById('apartmentInfo');
         if (!infoContainer) return;
@@ -160,7 +207,7 @@ class LeadFormManager {
         let infoHTML = '';
 
         if (apartment.id) {
-            infoHTML += `<div class="apartment-info-item"><strong>Стан:</strong> ${apartment.id}</div>`;
+            infoHTML += `<div class="apartment-info-item"><strong>${i18nManager.t('lead-form-apartment-label')}</strong> ${apartment.id}</div>`;
         }
 
         Object.entries(apartmentData).forEach(([key, fieldData]) => {
@@ -188,6 +235,9 @@ class LeadFormManager {
         });
 
         infoContainer.innerHTML = infoHTML;
+
+        // Update translations for dynamically added content
+        this.updateFormTranslations();
     }
 
     resetForm() {
@@ -354,7 +404,7 @@ class LeadFormManager {
             }).catch(err => console.warn('⚠️ Failed to log sync:', err));
 
             console.log('✅ Form submission complete!');
-            this.showSuccessMessage('✅ Вашето барање е успешно испратено! Наш тим ќе ве контактира наскоро.');
+            this.showSuccessMessage(`✅ ${i18nManager.t('lead-form-success')}`);
 
             setTimeout(() => {
                 this.hide();
@@ -368,16 +418,16 @@ class LeadFormManager {
             console.error('🔍 DIAGNOSTIC: Error code:', error.code);
             console.error('🔍 DIAGNOSTIC: Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
 
-            let errorMessage = '❌ Се случи грешка. Ве молиме обидете се повторно или контактирајте не директно.';
+            let errorMessage = `❌ ${i18nManager.t('lead-form-error-general')}`;
 
             if (error.message.includes('not initialized')) {
-                errorMessage = '❌ Системот не е правилно конфигуриран. Ве молиме контактирајте не директно.';
+                errorMessage = `❌ ${i18nManager.t('lead-form-error-config')}`;
             } else if (error.message.includes('timeout')) {
-                errorMessage = '❌ Барањето истече. Ве молиме проверете ја вашата интернет врска и обидете се повторно.';
+                errorMessage = `❌ ${i18nManager.t('lead-form-error-timeout')}`;
             } else if (error.message.includes('violates not-null') || error.message.includes('null value')) {
-                errorMessage = '❌ Ве молиме пополнете ги сите задолжителни полиња (име, емаил, телефон).';
-            } else if (error.code === 'PGRST116' || error.code === '23502') {
-                errorMessage = '❌ Ве молиме пополнете ги сите задолжителни полиња.';
+                errorMessage = `❌ ${i18nManager.t('lead-form-error-required-fields')}`;
+            } else if (error.code === 'PGRST116' || error.code === '23502' || error.code === '42501') {
+                errorMessage = `❌ ${i18nManager.t('lead-form-error-required-fields')}`;
             }
 
             this.showErrorMessage(errorMessage);
@@ -443,9 +493,9 @@ class LeadFormManager {
         if (submitBtn) {
             submitBtn.disabled = loading;
             if (loading) {
-                submitText.innerHTML = '<span class="loading-spinner"></span>Се испраќа...';
+                submitText.innerHTML = `<span class="loading-spinner"></span>${i18nManager.t('lead-form-submitting')}`;
             } else {
-                submitText.textContent = 'Испрати барање';
+                submitText.textContent = i18nManager.t('lead-form-submit');
             }
         }
     }

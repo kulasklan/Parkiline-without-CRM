@@ -70,7 +70,38 @@ class I18nManager {
                 'interested-button': 'Пополни формулар',
                 'email-subject': 'Се интересирам за стан %ID% - ParkLine Residences',
                 'express-interest-button': 'Испрати емаил',
-                'email-notification': 'Вашиот емаил клиент ќе се отвори...'
+                'email-notification': 'Вашиот емаил клиент ќе се отвори...',
+
+                // Lead Form
+                'lead-form-title': 'Испрати барање за интерес',
+                'lead-form-apartment-details': 'Детали за станот',
+                'lead-form-your-info': 'Ваши информации',
+                'lead-form-name-label': 'Име и презиме',
+                'lead-form-email-label': 'Емаил адреса',
+                'lead-form-phone-label': 'Телефонски број',
+                'lead-form-phone-placeholder': '+389...',
+                'lead-form-contact-method-label': 'Преферирам контакт преку',
+                'lead-form-contact-phone': 'Телефон',
+                'lead-form-contact-email': 'Емаил',
+                'lead-form-message-label': 'Дополнителна порака (опционално)',
+                'lead-form-message-placeholder': 'Напишете ја вашата порака овде...',
+                'lead-form-required': '*',
+                'lead-form-submit': 'Испрати барање',
+                'lead-form-submitting': 'Се испраќа...',
+                'lead-form-cancel': 'Откажи',
+                'lead-form-apartment-label': 'Стан:',
+
+                // Lead Form Error Messages
+                'lead-form-error-name': 'Ве молиме внесете го вашето име',
+                'lead-form-error-email': 'Ве молиме внесете валидна емаил адреса',
+                'lead-form-error-phone': 'Ве молиме внесете валиден телефонски број',
+
+                // Lead Form Success/Error Messages
+                'lead-form-success': 'Вашето барање е успешно испратено! Наш тим ќе ве контактира наскоро.',
+                'lead-form-error-general': 'Се случи грешка. Ве молиме обидете се повторно или контактирајте не директно.',
+                'lead-form-error-config': 'Системот не е правилно конфигуриран. Ве молиме контактирајте не директно.',
+                'lead-form-error-timeout': 'Барањето истече. Ве молиме проверете ја вашата интернет врска и обидете се повторно.',
+                'lead-form-error-required-fields': 'Ве молиме пополнете ги сите задолжителни полиња (име, емаил, телефон).'
             },
             en: {
                 // Header and Navigation
@@ -139,7 +170,38 @@ class I18nManager {
                 'interested-button': 'Fill Form',
                 'email-subject': 'I am interested in Apartment %ID% - ParkLine Residences',
                 'express-interest-button': 'Send Email',
-                'email-notification': 'Your email client will open...'
+                'email-notification': 'Your email client will open...',
+
+                // Lead Form
+                'lead-form-title': 'Submit Interest Request',
+                'lead-form-apartment-details': 'Apartment Details',
+                'lead-form-your-info': 'Your Information',
+                'lead-form-name-label': 'Full Name',
+                'lead-form-email-label': 'Email Address',
+                'lead-form-phone-label': 'Phone Number',
+                'lead-form-phone-placeholder': '+389...',
+                'lead-form-contact-method-label': 'Preferred contact method',
+                'lead-form-contact-phone': 'Phone',
+                'lead-form-contact-email': 'Email',
+                'lead-form-message-label': 'Additional message (optional)',
+                'lead-form-message-placeholder': 'Write your message here...',
+                'lead-form-required': '*',
+                'lead-form-submit': 'Submit Request',
+                'lead-form-submitting': 'Submitting...',
+                'lead-form-cancel': 'Cancel',
+                'lead-form-apartment-label': 'Apartment:',
+
+                // Lead Form Error Messages
+                'lead-form-error-name': 'Please enter your name',
+                'lead-form-error-email': 'Please enter a valid email address',
+                'lead-form-error-phone': 'Please enter a valid phone number',
+
+                // Lead Form Success/Error Messages
+                'lead-form-success': 'Your request has been submitted successfully! Our team will contact you soon.',
+                'lead-form-error-general': 'An error occurred. Please try again or contact us directly.',
+                'lead-form-error-config': 'System is not properly configured. Please contact us directly.',
+                'lead-form-error-timeout': 'Request timed out. Please check your internet connection and try again.',
+                'lead-form-error-required-fields': 'Please fill in all required fields (name, email, phone).'
             },
             sq: {
                 // Header and Navigation
@@ -208,7 +270,38 @@ class I18nManager {
                 'interested-button': 'Plotëso Formularin',
                 'email-subject': 'Jam i interesuar për Apartamentin %ID% - ParkLine Residences',
                 'express-interest-button': 'Dergo Email',
-                'email-notification': 'Klienti juaj i emailit do të hapet...'
+                'email-notification': 'Klienti juaj i emailit do të hapet...',
+
+                // Lead Form
+                'lead-form-title': 'Dërgo Kërkesë për Interes',
+                'lead-form-apartment-details': 'Detajet e Apartamentit',
+                'lead-form-your-info': 'Informacionet Tuaja',
+                'lead-form-name-label': 'Emri dhe Mbiemri',
+                'lead-form-email-label': 'Adresa e Emailit',
+                'lead-form-phone-label': 'Numri i Telefonit',
+                'lead-form-phone-placeholder': '+389...',
+                'lead-form-contact-method-label': 'Metoda e preferuar e kontaktit',
+                'lead-form-contact-phone': 'Telefon',
+                'lead-form-contact-email': 'Email',
+                'lead-form-message-label': 'Mesazh shtesë (opsionale)',
+                'lead-form-message-placeholder': 'Shkruani mesazhin tuaj këtu...',
+                'lead-form-required': '*',
+                'lead-form-submit': 'Dërgo Kërkesën',
+                'lead-form-submitting': 'Duke dërguar...',
+                'lead-form-cancel': 'Anulo',
+                'lead-form-apartment-label': 'Apartamenti:',
+
+                // Lead Form Error Messages
+                'lead-form-error-name': 'Ju lutemi vendosni emrin tuaj',
+                'lead-form-error-email': 'Ju lutemi vendosni një adresë emaili të vlefshme',
+                'lead-form-error-phone': 'Ju lutemi vendosni një numër telefoni të vlefshëm',
+
+                // Lead Form Success/Error Messages
+                'lead-form-success': 'Kërkesa juaj u dërgua me sukses! Ekipi ynë do t\'ju kontaktojë së shpejti.',
+                'lead-form-error-general': 'Ndodhi një gabim. Ju lutemi provoni përsëri ose na kontaktoni drejtpërdrejt.',
+                'lead-form-error-config': 'Sistemi nuk është konfiguruar siç duhet. Ju lutemi na kontaktoni drejtpërdrejt.',
+                'lead-form-error-timeout': 'Kërkesa skadoi. Ju lutemi kontrolloni lidhjen tuaj të internetit dhe provoni përsëri.',
+                'lead-form-error-required-fields': 'Ju lutemi plotësoni të gjitha fushat e detyrueshme (emri, emaili, telefoni).'
             }
         };
         
