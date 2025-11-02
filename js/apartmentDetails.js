@@ -194,16 +194,19 @@ class ApartmentDetailsManager {
         // Button styling is handled by CSS class
         
         // Add click tracking for analytics (optional)
-        interestedButton.addEventListener('click', () => {
+        interestedButton.addEventListener('click', (e) => {
             if (this.debugMode) {
                 console.log(`📧 User clicked interested button for apartment: ${apartment.id}`);
             }
-            
+
+            // Show notification to user that email client will open
+            this.showEmailNotification();
+
             // Track event with Analytics module
             if (window.Analytics && window.Analytics.isInitialized) {
                 window.Analytics.trackInterestedButtonClick(apartment);
             }
-            
+
             // Optional: Track this event for analytics
             if (window.gtag) {
                 gtag('event', 'apartment_interest', {
@@ -318,11 +321,12 @@ class ApartmentDetailsManager {
         if (status === 'available') {
             const interestBtn = document.createElement('button');
             interestBtn.className = 'interest-button';
+            interestBtn.setAttribute('data-i18n', 'express-interest-button');
             interestBtn.innerHTML = `
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                 </svg>
-                <span>Изрази интерес</span>
+                <span>${i18nManager.t('express-interest-button')}</span>
             `;
             interestBtn.onclick = () => {
                 if (window.leadFormManager) {
@@ -695,6 +699,35 @@ class ApartmentDetailsManager {
     // Check if details are visible
     isDetailsVisible() {
         return this.isVisible;
+    }
+
+    // Show email notification to user
+    showEmailNotification() {
+        // Check if notification already exists
+        let notification = document.getElementById('emailNotification');
+
+        if (!notification) {
+            // Create notification element
+            notification = document.createElement('div');
+            notification.id = 'emailNotification';
+            notification.className = 'email-notification';
+            document.body.appendChild(notification);
+        }
+
+        // Set notification text using i18n
+        notification.textContent = i18nManager.t('email-notification');
+
+        // Show notification with animation
+        notification.classList.add('show');
+
+        // Auto-hide after 3 seconds
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
+
+        if (this.debugMode) {
+            console.log('📧 Email notification shown to user');
+        }
     }
 }
 

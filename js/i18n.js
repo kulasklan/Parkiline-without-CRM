@@ -67,8 +67,10 @@ class I18nManager {
                 'hide-filters': 'СОКРИЈ ФИЛТРИ',
                 
                 // Contact Button
-                'interested-button': 'Се интересирам',
-                'email-subject': 'Се интересирам за стан %ID% - ParkLine Residences'
+                'interested-button': 'Пополни формулар',
+                'email-subject': 'Се интересирам за стан %ID% - ParkLine Residences',
+                'express-interest-button': 'Испрати емаил',
+                'email-notification': 'Вашиот емаил клиент ќе се отвори...'
             },
             en: {
                 // Header and Navigation
@@ -134,8 +136,10 @@ class I18nManager {
                 'hide-filters': 'HIDE FILTERS',
                 
                 // Contact Button
-                'interested-button': 'I am interested',
-                'email-subject': 'I am interested in Apartment %ID% - ParkLine Residences'
+                'interested-button': 'Fill Form',
+                'email-subject': 'I am interested in Apartment %ID% - ParkLine Residences',
+                'express-interest-button': 'Send Email',
+                'email-notification': 'Your email client will open...'
             },
             sq: {
                 // Header and Navigation
@@ -201,8 +205,10 @@ class I18nManager {
                 'hide-filters': 'FSHIH FILTRAT',
                 
                 // Contact Button
-                'interested-button': 'Jam i interesuar',
-                'email-subject': 'Jam i interesuar për Apartamentin %ID% - ParkLine Residences'
+                'interested-button': 'Plotëso Formularin',
+                'email-subject': 'Jam i interesuar për Apartamentin %ID% - ParkLine Residences',
+                'express-interest-button': 'Dergo Email',
+                'email-notification': 'Klienti juaj i emailit do të hapet...'
             }
         };
         

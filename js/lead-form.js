@@ -17,7 +17,7 @@ class LeadFormManager {
             <div class="lead-form-overlay" id="leadFormOverlay">
                 <div class="lead-form-container">
                     <div class="lead-form-header">
-                        <h2 id="leadFormTitle">Изрази интерес</h2>
+                        <h2 id="leadFormTitle" data-i18n="express-interest-button">Испрати емаил</h2>
                         <button class="lead-form-close" id="leadFormClose">&times;</button>
                     </div>
                     <div class="lead-form-body">
