@@ -101,7 +101,12 @@ class I18nManager {
                 'lead-form-error-general': 'Се случи грешка. Ве молиме обидете се повторно или контактирајте не директно.',
                 'lead-form-error-config': 'Системот не е правилно конфигуриран. Ве молиме контактирајте не директно.',
                 'lead-form-error-timeout': 'Барањето истече. Ве молиме проверете ја вашата интернет врска и обидете се повторно.',
-                'lead-form-error-required-fields': 'Ве молиме пополнете ги сите задолжителни полиња (име, емаил, телефон).'
+                'lead-form-error-required-fields': 'Ве молиме пополнете ги сите задолжителни полиња (име, емаил, телефон).',
+
+                // Success Modal
+                'success-modal-title': 'Успешно испратено!',
+                'success-modal-message': 'Вашето барање е испратено успешно. Наш тим ќе ве контактира наскоро за да ви даде повеќе информации.',
+                'success-modal-button': 'Во ред'
             },
             en: {
                 // Header and Navigation
@@ -201,7 +206,12 @@ class I18nManager {
                 'lead-form-error-general': 'An error occurred. Please try again or contact us directly.',
                 'lead-form-error-config': 'System is not properly configured. Please contact us directly.',
                 'lead-form-error-timeout': 'Request timed out. Please check your internet connection and try again.',
-                'lead-form-error-required-fields': 'Please fill in all required fields (name, email, phone).'
+                'lead-form-error-required-fields': 'Please fill in all required fields (name, email, phone).',
+
+                // Success Modal
+                'success-modal-title': 'Successfully Submitted!',
+                'success-modal-message': 'Your request has been sent successfully. Our team will contact you soon to provide more information.',
+                'success-modal-button': 'OK'
             },
             sq: {
                 // Header and Navigation
@@ -301,7 +311,12 @@ class I18nManager {
                 'lead-form-error-general': 'Ndodhi një gabim. Ju lutemi provoni përsëri ose na kontaktoni drejtpërdrejt.',
                 'lead-form-error-config': 'Sistemi nuk është konfiguruar siç duhet. Ju lutemi na kontaktoni drejtpërdrejt.',
                 'lead-form-error-timeout': 'Kërkesa skadoi. Ju lutemi kontrolloni lidhjen tuaj të internetit dhe provoni përsëri.',
-                'lead-form-error-required-fields': 'Ju lutemi plotësoni të gjitha fushat e detyrueshme (emri, emaili, telefoni).'
+                'lead-form-error-required-fields': 'Ju lutemi plotësoni të gjitha fushat e detyrueshme (emri, emaili, telefoni).',
+
+                // Success Modal
+                'success-modal-title': 'U Dërgua me Sukses!',
+                'success-modal-message': 'Kërkesa juaj është dërguar me sukses. Ekipi ynë do t\'ju kontaktojë së shpejti për të dhënë më shumë informacion.',
+                'success-modal-button': 'Në rregull'
             }
         };
         

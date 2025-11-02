@@ -82,6 +82,19 @@ class LeadFormManager {
                     </div>
                 </div>
             </div>
+
+            <div class="success-modal-overlay" id="successModalOverlay">
+                <div class="success-modal-container">
+                    <div class="success-icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                        </svg>
+                    </div>
+                    <h2 class="success-modal-title" id="successModalTitle" data-i18n="success-modal-title"></h2>
+                    <p class="success-modal-message" id="successModalMessage" data-i18n="success-modal-message"></p>
+                    <button class="success-modal-button" id="successModalButton" data-i18n="success-modal-button"></button>
+                </div>
+            </div>
         `;
 
         document.body.insertAdjacentHTML('beforeend', formHTML);
@@ -124,6 +137,17 @@ class LeadFormManager {
         // Listen for language changes
         document.addEventListener('languageChanged', () => {
             this.updateFormTranslations();
+        });
+
+        // Success modal event listeners
+        const successModalOverlay = document.getElementById('successModalOverlay');
+        const successModalButton = document.getElementById('successModalButton');
+
+        successModalButton?.addEventListener('click', () => this.hideSuccessModal());
+        successModalOverlay?.addEventListener('click', (e) => {
+            if (e.target === successModalOverlay) {
+                this.hideSuccessModal();
+            }
         });
     }
 
@@ -399,11 +423,8 @@ class LeadFormManager {
             }).catch(err => console.warn('⚠️ Failed to log sync:', err));
 
             console.log('✅ Form submission complete!');
-            this.showSuccessMessage(`✅ ${i18nManager.t('lead-form-success')}`);
-
-            setTimeout(() => {
-                this.hide();
-            }, 3000);
+            this.hide();
+            this.showSuccessModal();
 
         } catch (error) {
             console.error('❌ Error submitting lead:', error);
@@ -513,6 +534,23 @@ class LeadFormManager {
         const errorMsg = document.getElementById('leadErrorMessage');
         if (successMsg) successMsg.classList.remove('visible');
         if (errorMsg) errorMsg.classList.remove('visible');
+    }
+
+    showSuccessModal() {
+        this.updateFormTranslations();
+        const modalOverlay = document.getElementById('successModalOverlay');
+        if (modalOverlay) {
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    hideSuccessModal() {
+        const modalOverlay = document.getElementById('successModalOverlay');
+        if (modalOverlay) {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
     }
 }
 

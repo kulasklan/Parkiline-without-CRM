@@ -334,6 +334,123 @@
     fill: currentColor;
 }
 
+.success-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.success-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.success-modal-container {
+    background: linear-gradient(135deg, #ffffff 0%, #f0fff4 100%);
+    border-radius: 20px;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
+    max-width: 480px;
+    width: 90%;
+    padding: 40px;
+    text-align: center;
+    transform: scale(0.8) translateY(-20px);
+    transition: transform 0.3s ease;
+}
+
+.success-modal-overlay.active .success-modal-container {
+    transform: scale(1) translateY(0);
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: success-pop 0.5s ease 0.2s both;
+}
+
+.success-icon svg {
+    width: 48px;
+    height: 48px;
+    fill: white;
+    animation: checkmark-draw 0.5s ease 0.4s both;
+}
+
+@keyframes success-pop {
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes checkmark-draw {
+    0% {
+        opacity: 0;
+        transform: scale(0);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.success-modal-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #27ae60;
+    margin: 0 0 16px 0;
+}
+
+.success-modal-message {
+    font-size: 16px;
+    color: #555;
+    line-height: 1.6;
+    margin: 0 0 32px 0;
+}
+
+.success-modal-button {
+    width: 100%;
+    padding: 16px 32px;
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 6px 16px rgba(39, 174, 96, 0.3);
+}
+
+.success-modal-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(39, 174, 96, 0.4);
+}
+
+.success-modal-button:active {
+    transform: translateY(0);
+}
+
 @media (max-width: 768px) {
     .lead-form-container {
         max-width: 95%;
@@ -362,5 +479,27 @@
 
     .form-footer {
         flex-direction: column-reverse;
+    }
+
+    .success-modal-container {
+        padding: 32px 24px;
+    }
+
+    .success-icon {
+        width: 70px;
+        height: 70px;
+    }
+
+    .success-icon svg {
+        width: 42px;
+        height: 42px;
+    }
+
+    .success-modal-title {
+        font-size: 24px;
+    }
+
+    .success-modal-message {
+        font-size: 15px;
     }
 }
